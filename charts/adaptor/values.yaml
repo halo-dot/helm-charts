@@ -1,0 +1,164 @@
+# All sensitive values are marked as sensitive and should be stored in a separate values file that is encrypted, using a tool such as Mozilla SOPS
+
+# AWS Specific Configuration if AWS services are used
+# aws:
+   # AWS Access Key ID
+   # accessKeyId: 
+
+   # AWS Secret Access Key (sensitive) 
+   # secretAccessKey: 
+
+   # AWS Session Token (optional, sensitive)
+   # sessionToken: 
+
+   # AWS Region
+   # region: 
+
+# Database configuration
+database:
+  # Hostname of database server
+  host: 
+
+  # Port of database server
+  port: 5432
+
+  # Username to connect to database
+  user: 
+
+  # Password to connect to database (sensitive)
+  password: 
+
+  # Name of the database within the database server
+  databaseName: halo
+
+# Redis configuration
+redis:
+  # Hostname of Redis server
+  host: 
+
+  # Port of Redis server
+  port: 6379
+
+  # Username to connect to Redis (optional)
+  # user:
+
+  # Password to connect to Redis (sensitive)
+  password: 
+
+# Attestation service configuration
+attestation:
+  # Host URL of the attestation service. 
+  # This is used to decrypt messages and check attestation statuses
+  host: https://kernelserver.go.dev.haloplus.io
+
+  # API key for the attestation service (sensitive)
+  apiKey: 
+
+# Names of AWS keys used by the system
+keys:
+  # Key used to sign messages
+  messageSigning:
+
+  # Key used to sign database records
+  dbIntegrity:
+
+  # Key used to encrypt sensitive database records
+  dbEncryptionKey:
+
+  # Key used to sign audit log messages
+  logIntegrityKey:
+
+# Adaptor service configuration
+adaptor:
+  # Kubernetes namespace for the adaptor. 
+  # Will be created when the helm chart is installed
+  namespace: halo
+
+  # Name of the adaptor service
+  name: adaptor
+
+  # Number of replicas for the adaptor service
+  replicaCount: 1
+
+  image:
+    # Docker repository for the adaptor image
+    repository: 459295082152.dkr.ecr.eu-west-1.amazonaws.com/halo-adaptor-server
+
+    # Tag for the adaptor image
+    tag: latest
+
+    # Image pull policy
+    pullPolicy: Always
+
+  service:
+    # Target port for the adaptor service
+    # This shouldn't be changed unless directed to
+    targetPort: 9000
+
+    # Listening port for the adaptor service
+    # This is the port that will be exposed via the Kubernetes service
+    listeningPort: 80
+
+  # Under normal circumstances, these values shouldn't be tampered with
+  probes:
+    startup:
+      # Initial delay before startup probe is initiated
+      initialDelaySeconds: 60
+
+      # Period between startup probe checks
+      periodSeconds: 10
+
+      # Timeout for each startup probe check
+      timeoutSeconds: 5
+
+      # Number of successful checks before considering the startup probe successful
+      successThreshold: 1
+
+      # Number of failed checks before considering the startup probe failed
+      failureThreshold: 100
+
+  # Log level for the adaptor service
+  logLevel: LogInfo
+
+
+  # Under normal circumstances, these values shouldn't be tampered with
+  resources:
+    limits:
+      # CPU limit for the adaptor service
+      cpu: 100m
+
+      # Memory limit for the adaptor service
+      memory: 256Mi
+
+    requests:
+      # CPU request for the adaptor service
+      cpu: 100m
+
+      # Memory request for the adaptor service
+      memory: 256Mi
+
+  tls:
+    # Enable TLS for the adaptor service
+    # TLS should always be used, but this option exists to disable TLS locally if another service will provide TLS offloading
+    enabled: false
+
+    # TLS certificate
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      cert data
+      -----END CERTIFICATE-----
+
+    # TLS private key (sensitive)
+    key: |
+      -----BEGIN ENCRYPTED PRIVATE KEY-----
+      key data
+      -----END ENCRYPTED PRIVATE KEY-----
+
+    # TLS CA certificate
+    ca: |
+      -----BEGIN CERTIFICATE-----
+      ca data
+      -----END CERTIFICATE-----
+
+    # Passphrase for the TLS private key (sensitive)
+    passphrase:

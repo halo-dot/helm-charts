@@ -1,0 +1,15 @@
+{{- if .Values.aws }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  {{- with .Values.aws }}
+  AWS_ACCESS_KEY_ID: {{ .accessKeyId | quote }}
+  AWS_REGION: {{ .region | quote }}
+  {{- end }}
+---  
+{{- end }}

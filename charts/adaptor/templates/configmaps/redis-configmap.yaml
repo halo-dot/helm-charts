@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  {{- with .Values.redis }}
+  HALO_REDIS_HOST: {{ required "redis.host is required" .host | quote }}
+  HALO_REDIS_PORT: {{ required "redis.port is required" .port | quote }}
+  {{- end }}
+---  

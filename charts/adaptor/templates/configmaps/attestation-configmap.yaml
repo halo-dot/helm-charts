@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: attestation-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  {{- with .Values.attestation }}
+  HALO_ATTESTATION_HOST: {{ .host | quote }}
+  {{- end }}
+---  

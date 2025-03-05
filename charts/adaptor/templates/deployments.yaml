@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.adaptor.name }}
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.adaptor.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.adaptor.name }}
+  template:
+    metadata:
+      annotations:
+        ## Config Maps
+        checksum/db-config: {{ include (print $.Template.BasePath "/configmaps/db-configmap.yaml") . | sha256sum  }}
+        checksum/redis-config: {{ include (print $.Template.BasePath "/configmaps/redis-configmap.yaml") . | sha256sum  }}
+        checksum/adaptor-config: {{ include (print $.Template.BasePath "/configmaps/adaptor-configmap.yaml") . | sha256sum  }}
+        checksum/attestation-config: {{ include (print $.Template.BasePath "/configmaps/attestation-configmap.yaml") . | sha256sum  }}
+        checksum/keys-config: {{ include (print $.Template.BasePath "/configmaps/keys-configmap.yaml") . | sha256sum  }}
+
+
+        ## Secrets
+        {{- if (.Values.aws).secretAccessKey }}           
+        checksum/aws-secret: {{ include (print $.Template.BasePath "/secrets/aws-secrets.yaml") . | sha256sum  }}
+        {{- end }}
+        {{- if .Values.adaptor.tls.enabled }}
+        checksum/tls-secret: {{ include (print $.Template.BasePath "/secrets/tls-secrets.yaml") . | sha256sum  }}
+        {{- end }}
+        checksum/attestation-secret: {{ include (print $.Template.BasePath "/secrets/attestation-secrets.yaml") . | sha256sum  }}
+        checksum/db-secret: {{ include (print $.Template.BasePath "/secrets/db-secrets.yaml") . | sha256sum  }}
+        checksum/redis-secret: {{ include (print $.Template.BasePath "/secrets/redis-secrets.yaml") . | sha256sum  }}
+
+      labels:
+        app: {{ .Values.adaptor.name }}
+    spec:
+      volumes:
+        - name: attestation-certs
+          emptyDir: {}
+      containers:
+      {{- with .Values.adaptor }}
+      - name: {{ .name }}
+        image: {{ .image.repository }}:{{ .image.tag }}        
+        imagePullPolicy: {{ .image.pullPolicy }}
+        resources: {
+          limits: {
+            cpu: {{ .resources.limits.cpu | quote }},
+            memory: {{ .resources.limits.memory | quote }}
+          },
+          requests: {
+            cpu: {{ .resources.requests.cpu | quote }},
+            memory: {{ .resources.requests.memory | quote }}
+          }
+        }
+        ports:
+        - containerPort: {{ .service.targetPort }}
+      {{- end }}
+        env:
+          {{- if .Values.adaptor.tls.enabled }}
+          - name: SSL_CERT
+            value: {{ .Values.adaptor.tls.cert | quote }}
+          {{- if .Values.adaptor.tls.ca }}
+          - name: SSL_CA
+            value: {{ .Values.adaptor.tls.ca | quote }}
+          {{- end }}
+          - name: SSL_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.name}}-tls-secret
+                key: key.pem
+          {{- if .Values.adaptor.tls.passphrase }}
+          - name: SSL_PASSPHRASE
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.name}}-tls-secret
+                key: passphrase
+          {{- end }}
+          {{- end }}
+          {{- if (.Values.aws).secretAccessKey  }}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-aws-secret
+                key: secretAccessKey
+          - name: AWS_SESSION_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-aws-secret
+                key: sessionToken
+          {{- end }}
+          - name: HALO_ATTESTATION_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-attestation-secret
+                key: apiKey
+          - name: HALO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-database-secret
+                key: password
+          - name: HALO_REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-redis-secret
+                key: password
+        envFrom:
+          - configMapRef:
+              name: db-configmap
+          - configMapRef:
+              name: redis-configmap
+          - configMapRef:
+              name: adaptor-configmap
+          {{- if .Values.aws }}              
+          - configMapRef:
+              name: aws-configmap
+          {{- end }}
+          - configMapRef:
+              name: keys-configmap
+        volumeMounts:
+          - name: attestation-certs
+            mountPath: /attestation
+            readOnly: true
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+        startupProbe:
+          httpGet:
+            path: /readyz
+            port: {{ .Values.adaptor.service.targetPort }}
+            scheme: HTTP
+          periodSeconds: {{ required "adapter.probes.startup.periodSeconds required" .Values.adaptor.probes.startup.periodSeconds }}
+          initialDelaySeconds: {{ required "adapter.probes.startup.initialDelaySeconds required" .Values.adaptor.probes.startup.initialDelaySeconds }}
+          timeoutSeconds: {{ required "adapter.probes.startup.timeoutSeconds required" .Values.adaptor.probes.startup.timeoutSeconds }}
+          successThreshold: {{ required "adapter.probes.startup.successThreshold required" .Values.adaptor.probes.startup.successThreshold }}
+          failureThreshold: {{ required "adapter.probes.startup.failureThreshold required" .Values.adaptor.probes.startup.failureThreshold }}
+---      
