@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keys-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  {{- with .Values.keys }}
+  HALO_SERVER_CERTIFICATE_SIGNING: {{ .messageSigning | quote }}
+  # HALO_SERVER_CERTIFICATE_ENCRYPTION: {{ .certificateEncryption | quote }}
+  HALO_SERVER_DBINTEGRITY: {{ .dbIntegrity | quote }}
+  HALO_LOG_INTEGRITY_KEY: {{ .logIntegrity | quote }}
+  HALO_SERVER_DBENCRYPTIONKEY: {{ .dbEncryptionKey | quote }}
+  # HALO_SERVER_TRANSACTION_SIGNING: {{ .transactionSigning | quote }}
+  {{- end }}
+---  

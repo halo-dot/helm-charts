@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adaptor-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  HALO_LOG_LEVEL: {{ .Values.adaptor.logLevel | quote }}
+  HALO_SSL_ENABLED: {{ .Values.adaptor.tls.enabled | quote }}
+---  
