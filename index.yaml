@@ -1,0 +1,18 @@
+apiVersion: v1
+entries:
+  halo-adaptor:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-03-05T19:52:56.626844901Z"
+    description: Halo Adaptor
+    digest: ffeae549161783992bb000776a5a75f868c4b02707dabdef21740ae717f77e13
+    maintainers:
+    - email: halo@synthesis.co.za
+      name: Halo Team
+      url: https://halodot.io
+    name: halo-adaptor
+    type: application
+    urls:
+    - https://github.com/halo-dot/helm-charts/releases/download/halo-adaptor-1.0.0/halo-adaptor-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-03-05T19:52:56.626850261Z"
