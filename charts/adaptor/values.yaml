@@ -2,31 +2,31 @@
 
 # AWS Specific Configuration if AWS services are used
 # aws:
-   # AWS Access Key ID
-   # accessKeyId: 
+  # AWS Access Key ID
+  # accessKeyId:
 
-   # AWS Secret Access Key (sensitive) 
-   # secretAccessKey: 
+  # AWS Secret Access Key (sensitive)
+  # secretAccessKey:
 
-   # AWS Session Token (optional, sensitive)
-   # sessionToken: 
+  # AWS Session Token (optional, sensitive)
+  # sessionToken:
 
-   # AWS Region
-   # region: 
+  # AWS Region
+  # region:
 
 # Database configuration
 database:
   # Hostname of database server
-  host: 
+  host:
 
   # Port of database server
   port: 5432
 
   # Username to connect to database
-  user: 
+  user:
 
   # Password to connect to database (sensitive)
-  password: 
+  password:
 
   # Name of the database within the database server
   databaseName: halo
@@ -34,7 +34,7 @@ database:
 # Redis configuration
 redis:
   # Hostname of Redis server
-  host: 
+  host:
 
   # Port of Redis server
   port: 6379
@@ -43,16 +43,16 @@ redis:
   # user:
 
   # Password to connect to Redis (sensitive)
-  password: 
+  password:
 
 # Attestation service configuration
 attestation:
-  # Host URL of the attestation service. 
+  # Host URL of the attestation service.
   # This is used to decrypt messages and check attestation statuses
   host: https://kernelserver.go.dev.haloplus.io
 
   # API key for the attestation service (sensitive)
-  apiKey: 
+  apiKey:
 
 # Names of AWS keys used by the system
 keys:
@@ -70,7 +70,7 @@ keys:
 
 # Adaptor service configuration
 adaptor:
-  # Kubernetes namespace for the adaptor. 
+  # Kubernetes namespace for the adaptor.
   # Will be created when the helm chart is installed
   namespace: halo
 
@@ -119,7 +119,6 @@ adaptor:
 
   # Log level for the adaptor service
   logLevel: LogInfo
-
 
   # Under normal circumstances, these values shouldn't be tampered with
   resources:
