@@ -1,0 +1,80 @@
+# Configuration for the adaptor
+adaptor:
+  # Namespace that the adaptor has been deployed into
+  namespace: halo
+
+  # Base URL for the adaptor service
+  baseUrl: http://adaptor.halo.svc.cluster.local
+
+# Configuration for the bootstrapper
+bootstrapper:
+  # Name of the bootstrapper job
+  name: halo-adaptor-bootstrap
+
+  # Docker image configuration for the bootstrapper
+  image:
+    # Repository for the bootstrapper image
+    repository: 459295082152.dkr.ecr.eu-west-1.amazonaws.com/halo-adaptor-bootstrapper
+
+    # Tag for the bootstrapper image
+    tag: latest
+
+    # Image pull policy
+    pullPolicy: Always
+
+# Credentials for the admin user
+credentials:
+  # Admin username
+  adminUsername: admin
+  
+  # Current password for the admin user
+  password: password
+
+  # New password for the admin user. The admin user's password will be updated to this value
+  # The first time the chart is run, this needs to be set to change the default password
+  # newPassword: 
+
+# Details for the acquirer
+acquirerDetails:
+  # Name of the acquirer
+  name: acquirer
+
+  # Default terminal currency code
+  defaultTerminalCurrencyCode: 0710
+
+# JWT details
+jwtDetails:
+  # JWT issuer claim
+  issuerClaim: pagbank.cool.com
+
+  # JWT verification key
+  verificationKey: |
+    ----BEGIN TESTSD
+
+# Details for the payment processor
+paymentProcessorDetails:
+  # Name of the payment processor
+  name: paymentprocessor
+
+  # URL for the payment processor service
+  url: http://adaptor.halo.svc.cluster.local
+
+  # Tags to be encrypted. Tag 57 (Track2 equivalent data) will always be encrypted, in addition to the specified tags
+  # encryptTags:
+  #   - 9F5E
+  #   - 5A  
+
+# Terminal configuration overrides
+# terminalConfigOverrides: |
+#   [{
+#     "aid": "A0000000031010",
+#     "kernelId": 3,
+#     "transactionTypeConfigs": [{
+#       "transactionType": "0"
+#       "tlvDatabase": [{
+#         "remove": true,
+#         "tag": "EF8101",
+#         "value": "999999999998"
+#       }]
+#     }]
+#   }]
