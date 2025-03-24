@@ -35,4 +35,22 @@ spec:
               name: {{ .Values.adaptor.namespace }}-bootstrap-passwords
               key: newPassword 
         {{- end }}
+        - name: ACQUIRER_NAME
+          value: "{{ .Values.acquirerDetails.name }}"
+        - name: ACQUIRER_ALIAS
+          value: "{{ .Values.acquirerDetails.alias }}"
+        - name: ACQUIRER_JWT_ISSUER_NAME
+          value: "{{ .Values.acquirerDetails.jwtIssuerName }}"
+        - name: ACQUIRER_TERMINAL_CURRENCY_CODE
+          value: "{{ .Values.acquirerDetails.defaultTerminalCurrencyCode }}"
+        - name: ACQUIRER_PASS_THROUGH
+          value: "{{ .Values.acquirerDetails.passThrough | quote }}"
+        - name: PAYMENT_PROCESSOR_NAME
+          value: "{{ .Values.paymentProcessorDetails.name }}"
+        - name: PAYMENT_PROCESSOR_URL
+          value: "{{ .Values.paymentProcessorDetails.url }}"
+        - name: PAYMENT_PROCESSOR_JWE_EXPIRY
+          value: "{{ .Values.paymentProcessorDetails.jweExpiry | quote }}"
+        - name: PAYMENT_PROCESSOR_JWE_ENCRYPTION
+          value: "{{ .Values.paymentProcessorDetails.jweEncryption | quote }}"
 ---

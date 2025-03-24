@@ -14,8 +14,14 @@ data:
 
   # Acquirer details
   BOOTSTRAP_ACQUIRER_NAME: {{ .Values.acquirerDetails.name | quote }}
-  BOOTSTRAP_ACQUIRER_JWT_ISSUER_NAME: {{ .Values.acquirerDetails.jwtIssuerClaim | quote }}
+  BOOTSTRAP_ACQUIRER_ALIAS: {{ .Values.acquirerDetails.alias | quote }}
+  BOOTSTRAP_ACQUIRER_JWT_ISSUER_NAME: {{ .Values.acquirerDetails.jwtIssuerName | quote }}
   BOOTSTRAP_ACQUIRER_TERMINAL_CURRENCY_CODE: {{ .Values.acquirerDetails.defaultTerminalCurrencyCode | quote }}
+  BOOTSTRAP_ACQUIRER_PASS_THROUGH: {{ .Values.acquirerDetails.passThrough | quote }}
+  BOOTSTRAP_ACQUIRER_PIN_ALLOWED: {{ .Values.acquirerDetails.pinAllowed | quote }}
+  BOOTSTRAP_ACQUIRER_PIN_DEFAULT: {{ .Values.acquirerDetails.pinDefault | quote }}
+  BOOTSTRAP_ACQUIRER_MOVE_PIN_PAD: {{ .Values.acquirerDetails.movePinPad | quote }}
+  BOOTSTRAP_ACQUIRER_JUMBLE_PIN_PAD: {{ .Values.acquirerDetails.jumblePinPad | quote }}
 
   # JWT Details
   BOOTSTRAP_JWT_KEY: {{ .Values.jwtDetails.verificationKey | quote }}
@@ -24,6 +30,8 @@ data:
   # Payment Provider Details
   BOOTSTRAP_PAYMENT_PROVIDER_NAME: {{ .Values.paymentProcessorDetails.name | quote }}
   BOOTSTRAP_PAYMENT_PROVIDER_URL: {{ .Values.paymentProcessorDetails.url | quote }}
+  BOOTSTRAP_PAYMENT_PROVIDER_JWE_EXPIRY: {{ .Values.paymentProcessorDetails.jweExpiry | quote }}
+  BOOTSTRAP_PAYMENT_PROVIDER_JWE_ENCRYPTION: {{ .Values.paymentProcessorDetails.jweEncryption | quote }}
   BOOTSTRAP_ENCRYPT_TAGS: {{ .Values.paymentProcessorDetails.encryptTags | join "," | quote }}
 
   # Terminal Config Override

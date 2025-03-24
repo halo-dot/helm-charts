@@ -21,7 +21,6 @@ app.kubernetes.io/name: {{ include "bootstrap.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-
 {{/*
 Common labels
 */}}
@@ -32,4 +31,25 @@ helm.sh/chart: {{ include "bootstrap.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Helper for acquirer details
+*/}}
+{{- define "bootstrap.acquirerDetails" -}}
+name: {{ .Values.acquirerDetails.name }}
+alias: {{ .Values.acquirerDetails.alias }}
+jwtIssuerName: {{ .Values.acquirerDetails.jwtIssuerName }}
+defaultTerminalCurrencyCode: {{ .Values.acquirerDetails.defaultTerminalCurrencyCode }}
+passThrough: {{ .Values.acquirerDetails.passThrough | quote }}
+{{- end -}}
+
+{{/*
+Helper for payment processor details
+*/}}
+{{- define "bootstrap.paymentProcessorDetails" -}}
+name: {{ .Values.paymentProcessorDetails.name }}
+url: {{ .Values.paymentProcessorDetails.url }}
+jweExpiry: {{ .Values.paymentProcessorDetails.jweExpiry | quote }}
+jweEncryption: {{ .Values.paymentProcessorDetails.jweEncryption | quote }}
 {{- end -}}

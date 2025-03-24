@@ -32,7 +32,7 @@ credentials:
 
   # New password for the admin user. The admin user's password will be updated to this value
   # The first time the chart is run, this needs to be set to change the default password
-  # newPassword: 
+  # newPassword: newPassword
 
 # Details for the acquirer
 acquirerDetails:
@@ -42,10 +42,21 @@ acquirerDetails:
   # Default terminal currency code
   defaultTerminalCurrencyCode: 0710
 
+  # Additional acquire details
+  alias: pick-n-pay
+  passThrough: false
+  config: []
+  #pinAllowed: true
+  #pinDefault: false
+  #movePinPad: true
+  #jumblePinPad: true
+
 # JWT details
 jwtDetails:
   # JWT issuer claim
   issuerClaim: pagbank.cool.com
+
+  issuerName: authserver.picknpay.test.haloplus.io
 
   # JWT verification key
   verificationKey: |
@@ -63,6 +74,21 @@ paymentProcessorDetails:
   # encryptTags:
   #   - 9F5E
   #   - 5A  
+
+  # Additional payment provider details
+  jweExpiry: 604800
+  encryptFields: []
+  jweEncryption: false
+  config: []
+  createdAt: ""
+  updatedAt: ""
+
+# Key details
+key:
+  acquireId: 0
+  key: ""
+  createdAt: ""
+  updatedAt: ""
 
 # Terminal configuration overrides
 # terminalConfigOverrides: |
