@@ -3,15 +3,23 @@ name: Release Charts
 on:
   push:
     branches:
-      - master
+      - gh-action-test
+  pull_request:
+    branches:
+      - gh-action-test
 
 jobs:
   release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+
+  lint-test:
+    name: Helm Lint & Test
+    runs-on: ubuntu-latest
+  
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -25,3 +33,14 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: latest
+
+      - name: Run Helm Lint
+        run: helm lint charts/adaptor-bootstrap charts/adaptor
+
+      - name: Run Helm Template
+        run: helm template charts > /dev/null
