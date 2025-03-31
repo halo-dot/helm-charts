@@ -33,3 +33,17 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/*
+Generate the full name of the resource.
+*/}}
+{{- define "adaptor.fullname" -}}
+{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Generate the name of the ServiceAccount.
+*/}}
+{{- define "adaptor.serviceAccountName" -}}
+{{- printf "%s-%s" .Release.Name "serviceaccount" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

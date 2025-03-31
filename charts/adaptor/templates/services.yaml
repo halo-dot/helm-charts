@@ -15,4 +15,6 @@ spec:
   type: LoadBalancer
   selector:
     app: {{ .Values.adaptor.name }}
+service:
+  type: ClusterIP
 ---

@@ -17,16 +17,16 @@
 # Database configuration
 database:
   # Hostname of database server
-  host:
+  host: database-host
 
   # Port of database server
   port: 5432
 
   # Username to connect to database
-  user:
+  user: database-user
 
   # Password to connect to database (sensitive)
-  password:
+  password: database-password
 
   # Name of the database within the database server
   databaseName: halo
@@ -34,7 +34,7 @@ database:
 # Redis configuration
 redis:
   # Hostname of Redis server
-  host:
+  host: redis-host
 
   # Port of Redis server
   port: 6379
@@ -43,7 +43,7 @@ redis:
   # user:
 
   # Password to connect to Redis (sensitive)
-  password:
+  password: redis-password
 
 # Attestation service configuration
 attestation:
@@ -52,7 +52,7 @@ attestation:
   host: https://kernelserver.go.dev.haloplus.io
 
   # API key for the attestation service (sensitive)
-  apiKey:
+  apiKey: attestation-api-key
 
 # Names of AWS keys used by the system
 keys:
@@ -80,6 +80,13 @@ adaptor:
   # Number of replicas for the adaptor service
   replicaCount: 1
 
+  ingress:
+    enabled: false
+
+  autoscaling:
+    enabled: false
+    targetCPUUtilizationPercentage: 80
+
   image:
     # Docker repository for the adaptor image
     repository: 459295082152.dkr.ecr.eu-west-1.amazonaws.com/halo-adaptor-server
@@ -98,6 +105,10 @@ adaptor:
     # Listening port for the adaptor service
     # This is the port that will be exposed via the Kubernetes service
     listeningPort: 80
+
+    type: ClusterIP
+    
+    port: 9000
 
   # Under normal circumstances, these values shouldn't be tampered with
   probes:
@@ -161,3 +172,6 @@ adaptor:
 
     # Passphrase for the TLS private key (sensitive)
     passphrase:
+
+serviceAccount:
+  create: true

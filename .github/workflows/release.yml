@@ -4,14 +4,19 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   release:
+    name: Release Helm Charts
+    runs-on: ubuntu-latest
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -25,3 +30,32 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          args: upload --skip-existing
+
+  lint-test:
+    name: Helm Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: latest
+
+      - name: Run Helm Lint for Adaptor Chart
+        run: helm lint charts/adaptor
+
+      - name: Run Helm Lint for Adaptor Bootstrap Chart
+        run: helm lint charts/adaptor-bootstrap
+
+      - name: Run Helm Template for Adaptor Chart
+        run: helm template charts/adaptor > /dev/null
+
+      - name: Run Helm Template for Adaptor Bootstrap Chart
+        run: helm template charts/adaptor-bootstrap > /dev/null
