@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   halo-adaptor:
   - apiVersion: v2
+    appVersion: 1.0.4
+    created: "2025-09-01T14:26:17.779555028Z"
+    description: Halo Adaptor
+    digest: 774062e7632744acafb8a74ad73fb13681b5654f9380990ae28ac7244d3bed00
+    maintainers:
+    - email: halo@synthesis.co.za
+      name: Halo Team
+      url: https://halodot.io
+    name: halo-adaptor
+    type: application
+    urls:
+    - https://github.com/halo-dot/helm-charts/releases/download/halo-adaptor-1.0.4/halo-adaptor-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
     appVersion: 1.0.2
     created: "2025-09-01T05:58:59.791447754Z"
     description: Halo Adaptor
@@ -45,6 +59,20 @@ entries:
     version: 1.0.0
   halo-adaptor-bootstrap:
   - apiVersion: v2
+    appVersion: 1.0.4
+    created: "2025-09-01T14:26:17.970684183Z"
+    description: Halo Adaptor Bootstrapper
+    digest: 031688e02687ba1c5411e8b63ba459431ce5501a44cf51a7299a804f74313f13
+    maintainers:
+    - email: halo@synthesis.co.za
+      name: Halo Team
+      url: https://halodot.io
+    name: halo-adaptor-bootstrap
+    type: application
+    urls:
+    - https://github.com/halo-dot/helm-charts/releases/download/halo-adaptor-bootstrap-1.0.4/halo-adaptor-bootstrap-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
     appVersion: 1.0.2
     created: "2025-09-01T05:58:59.923746005Z"
     description: Halo Adaptor Bootstrapper
@@ -72,4 +100,4 @@ entries:
     urls:
     - https://github.com/halo-dot/helm-charts/releases/download/halo-adaptor-bootstrap-1.0.0/halo-adaptor-bootstrap-1.0.0.tgz
     version: 1.0.0
-generated: "2025-09-01T05:58:59.923767306Z"
+generated: "2025-09-01T14:26:17.970708969Z"
