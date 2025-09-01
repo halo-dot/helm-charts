@@ -1,0 +1,121 @@
+adaptor:
+  # Set this to the namespace of the halo adaptor
+  namespace: halo
+  # Set this to the URL of the adaptor's service
+  url: http://adaptor
+  # Set this to the current admin username
+  username: admin
+  # Set this to the current admin password, you do not necessarily need to update this 
+  # value, if the password is changed the bootstrapper will use the newPassword to login, sensitive
+  currentPassword: password
+  # Set this to a new admin password if you want to change the admin password, required and sensitive
+  newPassword:
+
+bootstrap:
+  # Name of the boostrap job
+  name: bootstrap
+  image:
+    # Image repository for the bootstrap image, required
+    repository:
+    # Tag for the bootstrap image, this overrides the version setting
+    tag: latest
+    pullPolicy: Always
+    
+  acquirer:
+    # Name of the "Acquirer" (Acquirer is the Halo term for an App)
+    name: Acquirer
+    # Alias of the "Acquirer" (Acquirer is the Halo term for an App)
+    alias: Acquirer
+  jwt:
+    # Name for the iss field of the JWT you will issue to the SDK to authenticate your 
+    # users to the Adaptor
+    issuerName: jwtIssuer
+    # Public key used to validate the JWTs, required
+    key:
+
+  # Terminal currency code to set the terminal to
+  terminalCurrencyCode: "0710"
+  # Tags which must be encrypted by the terminal
+  encryptTags: "57,5A"
+  # How many times the bootstrap job must try to run before failing
+  backoffLimit: 1
+  # Terminal config overrides, these must be set to override the default terminal config
+  #
+  # ```yaml title="Format for configOverride"
+  # - aid: A0000000031010
+  #   kernelID: 3
+  #   transactionTypeConfigs:
+  #     - transactionType: "00"
+  #       tlvDatabase:
+  #         - tag: "9F33"
+  #           value: "200808"
+  # ```
+  #   
+  # To remove a config override, add `"remove": true` to the config override object
+  # ```yaml title="Format for configOverride with remove"
+  # # Example to remove an AID:
+  # - aid: A0000000031010
+  #   remove: true
+  #
+  # # Example to remove a transaction type config:
+  # - aid: A0000000031010
+  #   kernelID: 3
+  #   transactionTypeConfigs:
+  #     - transactionType: "00"
+  #       remove: true
+  #
+  # # Example to remove a TLV tag:
+  # - aid: A0000000031010
+  #   kernelID: 3
+  #   transactionTypeConfigs:
+  #   - transactionType: "00"
+  #     tlvDatabase: 
+  #       - tag: "9F33"
+  #         remove: true
+  # ```
+  #
+  configOverride: []
+
+  # CA public keys overrides, these must be set to override the default CA public keys
+  # format for CA public keys overrides
+  #
+  #```yaml title="Format for caPublicKeyOverride"
+  # - hexRID: A000000025
+  #   hexRIDIndex: 01
+  #   remove: true
+  #   
+  # - hexRID: <hexRID>
+  #   hexRIDIndex: <hexRIDIndex>
+  #   keyLengthInBits: <keyLengthInBits>
+  #   hexExponent: <hexExponent>
+  #   hexModulus: <hexModulus>
+  #   hexHashSha1: <hexHashSha1>
+  #   
+  # - hexRID: A000000025
+  #   hexRIDIndex: 02
+  #   keyLengthInBits: 896
+  #   hexExponent: 03
+  #   hexModulus: AF4B8D230FDFCB1538E975795A1DB40C396A5359FAA31AE095CB522A5C82E7FFFB252860EC2833EC3D4A665F133DD934EE1148D81E2B7E03F92995DDF7EB7C90A75AB98E69C92EC91A533B21E1C4918B43AFED5780DE13A32BBD37EBC384FA3DD1A453E327C56024DACAEA74AA052C4D
+  #   hexHashSha1: 33F5B0344943048237EC89B275A95569718AEE20
+  # ```yaml
+  #
+  caPublicKeyOverride: []
+  
+  paymentProvider:
+  # Name of the paymentprovider, can be left as default
+    name: PaymentProvider
+  # URL of the paymentprovider service
+    url: http://paymentprovider
+
+
+imageCredentials:
+  # Enables using private registries with authentication
+  enabled: false
+  # Sets the URL for the private registry to login to
+  registry: quay.io
+  # Sets the username for logging into the private registry
+  username: someone
+  # Sets the password for logging into the private registry, sensitive
+  password: sillyness
+  # Sets the email address for logging into the private registry
+  email: someone@host.com

@@ -7,11 +7,10 @@ metadata:
     {{- include "adaptor.labels" . | nindent 4 }}
 data:
   {{- with .Values.keys }}
-  HALO_SERVER_CERTIFICATE_SIGNING: {{ .messageSigning | quote }}
-  # HALO_SERVER_CERTIFICATE_ENCRYPTION: {{ .certificateEncryption | quote }}
+  HALO_LOG_INTEGRITY_KEY: {{ .dbIntegrity | quote }}
   HALO_SERVER_DBINTEGRITY: {{ .dbIntegrity | quote }}
-  HALO_LOG_INTEGRITY_KEY: {{ .logIntegrity | quote }}
   HALO_SERVER_DBENCRYPTIONKEY: {{ .dbEncryptionKey | quote }}
-  # HALO_SERVER_TRANSACTION_SIGNING: {{ .transactionSigning | quote }}
+  HALO_SERVER_TRANSACTION_SIGNING: {{ .transactionSigning | quote }}
+  HALO_SCHEDULER_INTEGRITY_CMK: "alias/{{ .cmk }}"
   {{- end }}
 ---  

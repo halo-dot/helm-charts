@@ -1,0 +1,16 @@
+{{- if .Values.redis.tls.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-tls-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+{{- with .Values.redis }}
+  ca.crt: {{ .tls.ca | toYaml | nindent 4 }}
+  cert.crt: {{ .tls.cert | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
+---  
+

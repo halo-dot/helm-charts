@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: attestation-configmap
+  name: unset-configmap
   namespace: {{ .Values.adaptor.namespace }}
   labels:
     {{- include "adaptor.labels" . | nindent 4 }}
 data:
-  {{- with .Values.attestation }}
-  HALO_ATTESTATION_REMOTE_URL: {{ .host | quote }}
-  {{- end }}
+  HALO_JWT_ISSUER: ""
+  HALO_JWT_KERNEL_SERVER_PINS: ""
+  HALO_JWT_PIN_KEY_PIN: ""
 ---  

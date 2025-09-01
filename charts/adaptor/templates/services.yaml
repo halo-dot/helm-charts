@@ -12,7 +12,42 @@ spec:
     port: {{ .Values.adaptor.service.listeningPort }}
     targetPort: {{ .Values.adaptor.service.targetPort }}
     protocol: TCP
-  type: LoadBalancer
   selector:
     app: {{ .Values.adaptor.name }}
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.paymentProvider.name }}
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    app: {{ .Values.paymentProvider.name }}
+    {{- include "paymentProvider.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.paymentProvider.service.listeningPort | required "Listening port for payment processor must be specified" }}
+    targetPort: {{ .Values.paymentProvider.service.targetPort | required "Target port for payment processor must be specified" }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.paymentProvider.name }}
+---
+{{- if .Values.hsmService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.hsmService.name }}
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    app: {{ .Values.hsmService.name }}
+    {{- include "hsmService.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.hsmService.service.listeningPort | required "Listening port for hsm service must be specified" }}
+    targetPort: {{ .Values.hsmService.service.targetPort | required "Target port for hsm service must be specified" }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.hsmService.name }}
+---
+{{- end}}

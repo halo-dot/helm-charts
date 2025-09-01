@@ -1,0 +1,26 @@
+{{- if .Values.hsmService.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hsmservice-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "hsmService.labels" . | nindent 4 }}
+data:
+  {{- with .Values.hsmService }}
+  SERVER_NAME: {{ .name | quote }}
+  SERVER_PORT: {{ .service.targetPort | quote }}
+  SERVER_CA: {{ .tls.ca | toYaml | indent 4 }}
+  SERVER_CERT: {{ .tls.cert | toYaml | indent 4 }}
+  HSM_CA: {{ .hsm.ca | toYaml | indent 4 }}
+  HSM_CERT: {{ .hsm.cert | toYaml | indent 4 }}
+  HSM_IP: {{ .hsm.ip | required "HSM IP required" | quote }}
+  HSM_PORT: {{ .hsm.port | required "HSM port required" | quote }}
+  HSM_LMK_ID: {{ .hsm.lmkId | quote }}
+  HSM_NAME: {{ .hsm.name | quote }}
+  MASK_PCI_SENSITIVE_DATA: {{ .maskPciSensitiveData | quote }}
+  DESTINATION_PIN_KEY_TYPE: {{ .destinationPinKeyType | quote }}
+  DESTINATION_DATA_KEY_TYPE: {{ .destinationDataKeyType | quote }}
+  {{- end }}
+---  
+{{- end }}

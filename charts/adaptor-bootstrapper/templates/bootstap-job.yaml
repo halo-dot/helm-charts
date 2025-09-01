@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ .Values.adaptor.namespace }}
+  name: {{ .Values.bootstrap.name }}-job
+spec:
+  completions: 1
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: {{ .Values.bootstrap.backoffLimit }}
+  selector:
+    matchLabels:
+      job-name: {{ .Values.bootstrap.name }}-job
+  template:
+    metadata:
+      labels:
+        job-name: {{ .Values.bootstrap.name }}-job
+    spec:
+      containers:
+        - name: {{ .Values.bootstrap.name }}
+          image: {{ .Values.bootstrap.image.repository }}:{{ .Values.bootstrap.image.tag | required "Requires image tag" }}
+          imagePullPolicy: {{ .Values.bootstrap.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: adaptor-bootstrap-configmap
+
+          env:
+            - name: BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adaptor-bootstrap-password
+                  key: currentPassword
+            - name: BOOTSTRAP_ADMIN_NEW_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adaptor-bootstrap-password
+                  key: newPassword
+
+      restartPolicy: Never
+      {{- if .Values.imageCredentials.enabled }}
+      imagePullSecrets:
+        - name: {{ .Values.adaptor.namespace }}-image-pull-secret
+      {{- end }}  

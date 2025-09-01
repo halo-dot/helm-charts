@@ -7,9 +7,10 @@ metadata:
     {{- include "adaptor.labels" . | nindent 4 }}
 data:
   {{- with .Values.database }}
-  HALO_DB_NAME: {{ required "database.databaseName is required" .databaseName | quote }}
-  HALO_DB_HOST: {{ required "database.host is required" .host | quote }}
-  HALO_DB_USER: {{ required "database.user is required" .user | quote }}
-  HALO_DB_PORT: {{ required "database.port is required" .port | quote }}
+  HALO_DB_NAME: {{ required "A database name is required" .databaseName | quote }}
+  HALO_DB_HOST: {{ required "A database hostname is required" .host | quote }}
+  HALO_DB_USER: {{ required "A database user is required" .user | quote }}
+  HALO_DB_PORT: {{ required "A database port is required" .port | quote }}
+  HALO_DB_PASSWORD: {{ required "A database password is required" .password | quote }}
   {{- end }}
 ---  

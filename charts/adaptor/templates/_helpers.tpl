@@ -21,6 +21,15 @@ app.kubernetes.io/name: {{ include "adaptor.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
+{{- define "paymentProvider.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "adaptor.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{- define "hsmService.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "adaptor.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
 
 {{/*
 Common labels
@@ -33,3 +42,27 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{- define "paymentProvider.labels" -}}
+helm.sh/chart: {{ include "adaptor.chart" . }}
+{{ include "paymentProvider.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "hsmService.labels" -}}
+helm.sh/chart: {{ include "adaptor.chart" . }}
+{{ include "hsmService.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "imagePullSecret" }}
+{{- with .Values.imageCredentials }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+{{- end }}
+{{- end }}

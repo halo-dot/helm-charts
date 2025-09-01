@@ -1,0 +1,13 @@
+{{- if .Values.openTelemetry }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+    OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: {{ .Values.openTelemetry.metricsEndpoint }}
+    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: {{ .Values.openTelemetry.tracesEndpoint }}
+---  
+{{- end }}

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adaptor-bootstrap-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+data:
+  BOOTSTRAP_ADAPTOR_BASE_URL: {{ .Values.adaptor.url | required "The adaptor url needs to be set" | quote }}
+  BOOTSTRAP_LOGIN_BASE_URL: {{ .Values.adaptor.url | required "The adaptor url needs to be set" | quote }}
+  BOOTSTRAP_ADMIN_USERNAME: {{ .Values.adaptor.username | required "The superadmin username needs to be set" | quote }}
+  BOOTSTRAP_ACQUIRER_NAME: {{ .Values.bootstrap.acquirer.name | quote }}
+  BOOTSTRAP_ACQUIRER_ALIAS: {{ .Values.bootstrap.acquirer.alias | quote }}
+  BOOTSTRAP_ACQUIRER_JWT_ISSUER_NAME: {{ .Values.bootstrap.jwt.issuerName | quote }}
+  BOOTSTRAP_ACQUIRER_TERMINAL_CURRENCY_CODE: {{ .Values.bootstrap.terminalCurrencyCode | quote }}
+  BOOTSTRAP_JWT_KEY: {{ .Values.bootstrap.jwt.key | required "JWT key required" | toYaml | indent 2 }}
+  BOOTSTRAP_PAYMENT_PROVIDER_NAME: {{ .Values.bootstrap.paymentProvider.name | quote }}
+  BOOTSTRAP_PAYMENT_PROVIDER_URL: {{ .Values.bootstrap.paymentProvider.url | quote }}
+  BOOTSTRAP_OVERRIDE_CONFIG: {{ .Values.bootstrap.configOverride | mustToJson | quote }}
+  BOOTSTRAP_OVERRIDE_CA_PUBLIC_KEYS: {{ .Values.bootstrap.caPublicKeyOverride | mustToJson | quote }}
+  BOOTSTRAP_ENCRYPT_TAGS: {{ .Values.bootstrap.encryptTags | quote }}
+---  

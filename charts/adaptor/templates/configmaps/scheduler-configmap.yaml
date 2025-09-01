@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduler-configmap
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "adaptor.labels" . | nindent 4 }}
+data:
+  {{- with .Values.scheduledJobs.voids }}
+  HALO_SCHEDULER_VOID_ENABLED: {{ .enabled | quote }} 
+  HALO_SCHEDULER_VOID_ROTATE_PERIOD: {{ .cron | quote }}
+  HALO_SCHEDULER_VOID_MAX_RETRIES: {{ .maxRetries | quote }} 
+  HALO_SCHEDULER_VOID_RUN_ONCE_AT_STARTUP: {{ .runAtStartup | quote }} 
+  {{- end}}
+---  

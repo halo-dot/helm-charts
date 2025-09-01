@@ -8,4 +8,13 @@ metadata:
 data:
   HALO_LOG_LEVEL: {{ .Values.adaptor.logLevel | quote }}
   HALO_SSL_ENABLED: {{ .Values.adaptor.tls.enabled | quote }}
+  HALO_JWT_KERNEL_SERVER_URL: "adaptor"
+  HALO_JWT_REGISTER_USER: "halo_register"
+  HALO_JSON_LOGS: {{ .Values.adaptor.jsonLogs | quote }}
+  HALO_RKI_HOST_KEY_NAME: "HaloRkiKey"
+  {{- if .Values.hsmService.enabled }}
+  HALO_KEYSTONE_URL: "{{- if .Values.hsmService.tls.enabled }}https://{{- else }}http://{{- end }}{{ .Values.hsmService.name }}"
+  {{- else }}
+  HALO_KEYSTONE_URL: {{ .Values.adaptor.hsmServiceHost | quote }}
+  {{- end }}
 ---  

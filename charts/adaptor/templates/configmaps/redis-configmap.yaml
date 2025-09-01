@@ -6,8 +6,21 @@ metadata:
   labels:
     {{- include "adaptor.labels" . | nindent 4 }}
 data:
-  {{- with .Values.redis }}
-  HALO_REDIS_HOST: {{ required "redis.host is required" .host | quote }}
-  HALO_REDIS_PORT: {{ required "redis.port is required" .port | quote }}
+{{- with .Values.redis }}
+  HALO_REDIS_HOST: {{ .host | quote }}
+  HALO_REDIS_PORT: {{ .port | quote }}
+  HALO_REDIS_USER: {{ .user | quote }}
+  {{- if .tls.enabled }}
+  HALO_REDIS_TLS_ENABLED: "true"
+  {{- if .tls.ca }}
+  HALO_REDIS_TLS_CA_PATH: "/redis-certs/ca.crt"
   {{- end }}
+  {{- if .tls.cert }}
+  HALO_REDIS_TLS_CERT_PATH: "/redis-certs/cert.crt"
+  {{- end }}
+  {{- if .tls.key }}
+  HALO_REDIS_TLS_KEY_PATH: "/redis-keys/key.pem"
+  {{- end }}
+  {{- end }}
+{{- end }}
 ---  
