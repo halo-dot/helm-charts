@@ -32,6 +32,26 @@ spec:
   selector:
     app: {{ .Values.paymentProvider.name }}
 ---
+{{- if .Values.binService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.binService.name }}
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    app: {{ .Values.binService.name }}
+    {{- include "binService.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.binService.service.listeningPort | required "Listening port for bin service must be specified" }}
+    targetPort: {{ .Values.binService.service.targetPort | required "Target port for bin service must be specified" }}
+    protocol: TCP
+  selector:
+    app: {{ .Values.binService.name }}
+---
+{{- end}}
+
 {{- if .Values.hsmService.enabled }}
 apiVersion: v1
 kind: Service

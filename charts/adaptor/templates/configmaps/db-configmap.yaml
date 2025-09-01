@@ -11,6 +11,5 @@ data:
   HALO_DB_HOST: {{ required "A database hostname is required" .host | quote }}
   HALO_DB_USER: {{ required "A database user is required" .user | quote }}
   HALO_DB_PORT: {{ required "A database port is required" .port | quote }}
-  HALO_DB_PASSWORD: {{ required "A database password is required" .password | quote }}
   {{- end }}
 ---  

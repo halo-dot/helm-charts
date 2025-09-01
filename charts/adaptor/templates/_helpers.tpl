@@ -26,6 +26,11 @@ app.kubernetes.io/name: {{ include "adaptor.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
+{{- define "binService.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "adaptor.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
 {{- define "hsmService.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "adaptor.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -46,6 +51,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- define "paymentProvider.labels" -}}
 helm.sh/chart: {{ include "adaptor.chart" . }}
 {{ include "paymentProvider.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "binService.labels" -}}
+helm.sh/chart: {{ include "adaptor.chart" . }}
+{{ include "binService.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}

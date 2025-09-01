@@ -176,7 +176,49 @@ paymentProvider:
   # Config for the paymentprovider, this is specific per payment provider and will be provided, required
   # Format will be `HALO_<PAYMENT_PROVIDER_NAME>_<CONFIG_KEY>: <CONFIG_VALUE>`
   config:
+    env:
+    
+    file:
+      - name: CONFIG_FILE
+        path: /etc/paymentprovider/config.json
+        content: 
 
+  secrets:
+    env:
+      
+    file:
+    
+
+binService:
+  # Whether to enable the BIN service, this may be required by your payment provider
+  enabled: false
+  # Name of the BIN service deployment and service
+  name: binservice
+  image:
+    # Image repository for the BIN service image, required
+    repository:
+    # Tag for the BIN service image, this overrides the version setting
+    tag:
+    pullPolicy: Always
+  service:
+    # The port the BIN service listens on, this will be provided along with the config for the BIN service
+    targetPort: 7011
+    # The port the BIN service exposes, if TLS is enabled this should be set to 443
+    listeningPort: 80
+  readinessProbe:
+    # Enables the readiness probe for the BIN service
+    enabled: true
+    # The frequency of readiness probes
+    periodSeconds: 30
+  # Resource limits and requests, these values can be tuned based on your volumes, it is recommended to set
+  # memory limits and requests to the same value
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
   
 hsmService:
   # Whether to enable the HSM service, this is required for PIN and card data encryption

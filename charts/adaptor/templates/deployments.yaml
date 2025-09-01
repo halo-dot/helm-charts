@@ -27,6 +27,7 @@ spec:
         {{- end }}
 
         ## Secrets
+        checksum/db-secret: {{ include (print $.Template.BasePath "/secrets/db-secrets.yaml") . | sha256sum  }}
         checksum/redis-secret: {{ include (print $.Template.BasePath "/secrets/redis-secret.yaml") . | sha256sum  }}
         checksum/hsmservice-apikey-secret: {{ include (print $.Template.BasePath "/secrets/hsmservice-apikey-secrets.yaml") . | sha256sum  }}
         {{- if .Values.aws }}           
@@ -67,6 +68,11 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.adaptor.namespace }}-redis-secret
+                key: password
+          - name: HALO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-db-secret
                 key: password
           {{- if .Values.adaptor.tls.enabled }}
           - name: SSL_CERT
@@ -216,10 +222,14 @@ spec:
         {{- if .Values.openTelemetry }}
         checksum/otel-config: {{ include (print $.Template.BasePath "/configmaps/otel-configmap.yaml") . | sha256sum  }}
         {{- end }}
+        checksum/payment-provider-file-configmap: {{ include (print $.Template.BasePath "/configmaps/payment-provider-file-configmaps.yaml") . | sha256sum  }}
 
         # Secrets
+        checksum/db-secret: {{ include (print $.Template.BasePath "/secrets/db-secrets.yaml") . | sha256sum  }}
         checksum/redis-secret: {{ include (print $.Template.BasePath "/secrets/redis-secret.yaml") . | sha256sum  }}
         checksum/hsmservice-apikey-secret: {{ include (print $.Template.BasePath "/secrets/hsmservice-apikey-secrets.yaml") . | sha256sum  }}
+        checksum/payment-provider-secrets: {{ include (print $.Template.BasePath "/secrets/payment-provider-env-secrets.yaml") . | sha256sum  }}
+        checksum/payment-provider-file-secret: {{ include (print $.Template.BasePath "/secrets/payment-provider-file-secrets.yaml") . | sha256sum  }}
         {{- if .Values.aws }}           
         checksum/aws-secret: {{ include (print $.Template.BasePath "/secrets/aws-secrets.yaml") . | sha256sum  }}
         {{- end }}
@@ -256,6 +266,11 @@ spec:
               secretKeyRef:
                 name: {{ .Values.adaptor.namespace }}-redis-secret
                 key: password
+          - name: HALO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-db-secret
+                key: password
           {{- if .Values.aws }}
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
@@ -274,6 +289,13 @@ spec:
               secretKeyRef:
                 name: {{ .Values.adaptor.namespace }}-hsmservice-apikey-secret
                 key: key
+        {{- end }}
+        {{- range $k, $v := .Values.paymentProvider.secrets.env }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: payment-provider-secrets
+                key: {{ $k }}
         {{- end }}
         envFrom:
           - configMapRef:
@@ -308,7 +330,7 @@ spec:
           periodSeconds: {{ default 120 (.Values.paymentProvider.readinessProbe).periodSeconds }}
         {{- end }}
         volumeMounts:
-          {{- if .Values.redis.tls.enabled }}
+        {{- if .Values.redis.tls.enabled }}
           {{- if .Values.redis.tls.key }}
           - name: redis-tls-key
             mountPath: /redis-keys
@@ -317,14 +339,26 @@ spec:
           - name: redis-tls-config
             mountPath: /redis-certs
             readOnly: true
-          {{- end }}
+        {{- end }}
+        {{- range $k, $v := .Values.paymentProvider.config.files }}
+          - name: payment-provider-{{ $k | replace "." "-" }}-configmap
+            mountPath: {{ $v.directory }}/{{ $k }}
+            subPath: {{ $k }}
+            readOnly: true
+        {{- end }}
+        {{- range $k, $v := .Values.paymentProvider.secrets.files }}
+          - name: payment-provider-{{ $k | replace "." "-" }}-secret
+            mountPath: {{ $v.directory }}/{{ $k }}
+            subPath: {{ $k }}
+            readOnly: true
+        {{- end }}
 
       {{- if .Values.imageCredentials.enabled }}
       imagePullSecrets:
         - name: {{ .Values.adaptor.namespace }}-image-pull-secret
       {{- end }}  
       volumes:
-        {{- with .Values.redis.tls }}
+      {{- with .Values.redis.tls }}
         {{- if and .enabled .key }}
         - name: redis-tls-key
           secret:
@@ -347,8 +381,179 @@ spec:
                 path: cert.crt
               {{- end }}
         {{- end }}
-        {{- end }}
+      {{- end }}
+      {{- range $k, $v := .Values.paymentProvider.config.files }}
+        - name: payment-provider-{{ $k | replace "." "-" }}-configmap
+          configMap:
+            name: payment-provider-{{ $k | replace "." "-" }}-configmap
+            items:
+              - key: {{ $k }}
+                path: {{ $k }}
+      {{- end }}
+      {{- range $k, $v := .Values.paymentProvider.secrets.files }}
+        - name: payment-provider-{{ $k | replace "." "-" }}-secret
+          secret:
+            secretName: payment-provider-{{ $k | replace "." "-" }}-secret
+            items:
+              - key: {{ $k }}
+                path: {{ $k }}
+      {{- end }}
 ---      
+{{- if .Values.binService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: binservice
+  namespace: {{ .Values.adaptor.namespace }}
+  labels:
+    {{- include "binService.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.binService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.binService.name }}
+  template:
+    metadata:
+      annotations:
+        ## Config Maps
+        checksum/db-config: {{ include (print $.Template.BasePath "/configmaps/db-configmap.yaml") . | sha256sum  }}
+        checksum/redis-config: {{ include (print $.Template.BasePath "/configmaps/redis-configmap.yaml") . | sha256sum  }}
+        checksum/adaptor-config: {{ include (print $.Template.BasePath "/configmaps/adaptor-configmap.yaml") . | sha256sum  }}
+        {{- if .Values.openTelemetry }}
+        checksum/otel-config: {{ include (print $.Template.BasePath "/configmaps/otel-configmap.yaml") . | sha256sum  }}
+        {{- end }}
+
+        # Secrets
+        checksum/db-secret: {{ include (print $.Template.BasePath "/secrets/db-secrets.yaml") . | sha256sum  }}
+        checksum/redis-secret: {{ include (print $.Template.BasePath "/secrets/redis-secret.yaml") . | sha256sum  }}
+        {{- if .Values.redis.tls.enabled }}
+        checksum/redis-tls-secret: {{ include (print $.Template.BasePath "/secrets/redis-tls-secrets.yaml") . | sha256sum  }}
+        {{- end }}
+        {{- if .Values.aws }}           
+        checksum/aws-secret: {{ include (print $.Template.BasePath "/secrets/aws-secrets.yaml") . | sha256sum  }}
+        {{- end }}
+
+      labels:
+        app: {{ .Values.binService.name }}
+    spec:
+      containers:
+      {{- with .Values.binService }}
+      - name: {{ .name }}
+        image: {{ .image.repository }}:{{ coalesce .image.tag $.Values.version }}        
+        imagePullPolicy: {{ .image.pullPolicy }}
+        resources: {
+          limits: {
+            cpu: {{ .resources.limits.cpu | quote }},
+            memory: {{ .resources.limits.memory | quote }}
+          },
+          requests: {
+            cpu: {{ .resources.requests.cpu | quote }},
+            memory: {{ .resources.requests.memory | quote }}
+          }
+        }
+        ports:
+        - containerPort: {{ .service.targetPort | required "Target port for bin service must be specified" }}
+      {{- end }}
+        env:
+          - name: OTEL_SERVICE_NAME
+            value: "binService"
+          - name: HALO_REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-redis-secret
+                key: password
+          - name: HALO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-db-secret
+                key: password
+          - name: HALO_JWT_SYSTEM_USER_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-jwt-secret
+                key: key
+          {{- if .Values.aws }}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.adaptor.namespace }}-aws-secret
+                key: secretAccessKey
+          {{- end }}
+        envFrom:
+          - configMapRef:
+              name: redis-configmap
+          - configMapRef:
+              name: adaptor-configmap
+
+          {{- if .Values.aws }}              
+          - configMapRef:
+              name: aws-configmap
+          {{- end }}
+
+          {{- if .Values.openTelemetry }}
+          - configMapRef:
+              name: otel-configmap
+          {{- end }}
+
+          - configMapRef:
+              name: keys-configmap
+          - configMapRef:
+              name: db-configmap
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+        {{- if .Values.binService.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: {{ .Values.binService.service.targetPort }}
+          periodSeconds: {{ default 120 (.Values.binService.readinessProbe).periodSeconds }}
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.redis.tls.enabled }}
+          {{- if .Values.redis.tls.key }}
+          - name: redis-tls-key
+            mountPath: /redis-keys
+            readOnly: true
+          {{- end }}
+          - name: redis-tls-config
+            mountPath: /redis-certs
+            readOnly: true
+        {{- end }}
+
+      {{- if .Values.imageCredentials.enabled }}
+      imagePullSecrets:
+        - name: {{ .Values.adaptor.namespace }}-image-pull-secret
+      {{- end }}  
+      volumes:
+      {{- with .Values.redis.tls }}
+        {{- if and .enabled .key }}
+        - name: redis-tls-key
+          secret:
+            secretName: {{ $.Values.adaptor.namespace }}-redis-tls-secret
+            items:
+              - key: key.pem
+                path: key.pem
+        {{- end }}
+        {{- if .enabled }}
+        - name: redis-tls-config
+          configMap:
+            name: redis-tls-configmap
+            items:
+              {{- if .ca }}
+              - key: ca.crt
+                path: ca.crt
+              {{- end }}
+              {{- if .cert }}
+              - key: cert.crt
+                path: cert.crt
+              {{- end }}
+        {{- end }}
+      {{- end }}
+---      
+{{- end }}
+
 {{- if .Values.hsmService.enabled }}
 apiVersion: apps/v1
 kind: Deployment

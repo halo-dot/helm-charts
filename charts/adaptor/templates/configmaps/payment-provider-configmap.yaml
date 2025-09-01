@@ -6,7 +6,8 @@ metadata:
   labels:
     {{- include "paymentProvider.labels" . | nindent 4 }}
 data:
-  {{- range $k, $v := .Values.paymentProvider.config }}
+  {{- range $k, $v := .Values.paymentProvider.config.env }}
   {{ $k }} : {{ $v | toYaml | indent 2 }}
   {{- end }}
 ---  
+

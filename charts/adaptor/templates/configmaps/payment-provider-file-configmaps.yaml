@@ -1,0 +1,14 @@
+{{- $namespace := .Values.adaptor.namespace }}
+{{- $labels := include "paymentProvider.labels" . }}
+{{- range $k, $v := .Values.paymentProvider.config.files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-provider-{{ $k | replace "." "-" }}-configmap
+  namespace: {{ $namespace }}
+  labels:
+    {{- $labels | nindent 4 }}
+data:
+  {{ $k }} : {{ $v.content | toYaml | indent 4 }}
+---  
+{{- end }}
