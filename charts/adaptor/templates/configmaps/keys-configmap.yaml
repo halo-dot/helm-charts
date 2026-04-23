@@ -12,5 +12,6 @@ data:
   HALO_SERVER_DBENCRYPTIONKEY: {{ .dbEncryptionKey | quote }}
   HALO_SERVER_TRANSACTION_SIGNING: {{ .transactionSigning | quote }}
   HALO_SCHEDULER_INTEGRITY_CMK: "alias/{{ .cmk }}"
+  HALO_SCHEDULER_CERTIFICATE_TRANSACTION_SIGNING_CMK: "alias/{{ .cmk }}"
   {{- end }}
 ---  
